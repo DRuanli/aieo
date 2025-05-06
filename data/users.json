@@ -12,7 +12,9 @@
         },
         "settings": {
             "notifications": true,
-            "daily_goal": 10
+            "daily_goal": 30,
+            "target_ielts_band": 8,
+            "study_preference": "academic"
         }
     }
 ]

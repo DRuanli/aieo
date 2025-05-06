@@ -1,6 +1,6 @@
 <?php
 /**
- * Enhanced functions.php with all improved functionality
+ * Enhanced functions.php with IELTS-specific functionality
  */
 
 // Database directory and file constants
@@ -39,11 +39,16 @@ function initializeDataStructure() {
     // Initialize categories file
     if (!file_exists(CATEGORIES_FILE)) {
         $defaultCategories = [
-            ['id' => 1, 'name' => 'Basics', 'description' => 'Basic vocabulary for beginners'],
-            ['id' => 2, 'name' => 'Greetings', 'description' => 'Common greetings and salutations'],
-            ['id' => 3, 'name' => 'Food', 'description' => 'Food and dining vocabulary'],
-            ['id' => 4, 'name' => 'Travel', 'description' => 'Travel and transportation terms'],
-            ['id' => 5, 'name' => 'Business', 'description' => 'Business and professional vocabulary']
+            ['id' => 1, 'name' => 'Education', 'description' => 'Vocabulary related to education and learning'],
+            ['id' => 2, 'name' => 'Environment', 'description' => 'Vocabulary related to environment and climate'],
+            ['id' => 3, 'name' => 'Technology', 'description' => 'Tech and digital vocabulary for IELTS'],
+            ['id' => 4, 'name' => 'Health', 'description' => 'Health and wellness vocabulary'],
+            ['id' => 5, 'name' => 'Society', 'description' => 'Social issues vocabulary for IELTS'],
+            ['id' => 6, 'name' => 'Work', 'description' => 'Career and workplace vocabulary'],
+            ['id' => 7, 'name' => 'Urban Development', 'description' => 'City planning and urbanization vocabulary'],
+            ['id' => 8, 'name' => 'Travel', 'description' => 'Travel and transportation vocabulary'],
+            ['id' => 9, 'name' => 'Culture', 'description' => 'Cultural topics vocabulary for IELTS'],
+            ['id' => 10, 'name' => 'Globalization', 'description' => 'International relations vocabulary']
         ];
         file_put_contents(CATEGORIES_FILE, json_encode($defaultCategories));
     }
@@ -74,7 +79,7 @@ function getCurrentUserId() {
 /**
  * Function to get vocabulary data with filtering and pagination
  * 
- * @param array $filters Optional filters (search, category, difficulty)
+ * @param array $filters Optional filters (search, category, difficulty, ielts_band, study_type)
  * @param int $page Current page number
  * @param int $perPage Items per page
  * @return array Vocabulary data with pagination info
@@ -106,7 +111,8 @@ function getVocabulary($filters = [], $page = 1, $perPage = 10) {
         $search = strtolower($filters['search']);
         $vocabulary = array_filter($vocabulary, function($item) use ($search) {
             return strpos(strtolower($item['english']), $search) !== false || 
-                   strpos(strtolower($item['vietnamese']), $search) !== false;
+                   strpos(strtolower($item['vietnamese']), $search) !== false ||
+                   (isset($item['context']) && strpos(strtolower($item['context']), $search) !== false);
         });
     }
     
@@ -124,6 +130,29 @@ function getVocabulary($filters = [], $page = 1, $perPage = 10) {
         $vocabulary = array_filter($vocabulary, function($item) use ($difficulty) {
             return isset($item['difficulty']) && $item['difficulty'] === $difficulty;
         });
+    }
+    
+    // Apply IELTS band level filter
+    if (!empty($filters['ielts_band'])) {
+        $ielts_band = $filters['ielts_band'];
+        $vocabulary = array_filter($vocabulary, function($item) use ($ielts_band) {
+            return isset($item['ielts_band']) && $item['ielts_band'] == $ielts_band;
+        });
+    }
+    
+    // Apply study type filter
+    if (!empty($filters['study_type'])) {
+        if ($filters['study_type'] === 'academic') {
+            // Academic Word List filter - words with higher IELTS band levels
+            $vocabulary = array_filter($vocabulary, function($item) {
+                return isset($item['ielts_band']) && $item['ielts_band'] >= 7;
+            });
+        } else if ($filters['study_type'] === 'collocations') {
+            // Collocations filter - words with collocations defined
+            $vocabulary = array_filter($vocabulary, function($item) {
+                return isset($item['collocations']) && !empty($item['collocations']);
+            });
+        }
     }
     
     // Reindex array
@@ -183,7 +212,7 @@ function saveVocabulary($vocabulary) {
  * @return array|null Vocabulary entry or null if not found
  */
 function getVocabularyById($id) {
-    $vocabulary = getVocabulary()['data'];
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
     
     foreach ($vocabulary as $item) {
         if (isset($item['id']) && $item['id'] == $id) {
@@ -202,16 +231,33 @@ function getVocabularyById($id) {
  * @return bool Success status
  */
 function saveVocabularyEntry($data, $id = null) {
-    $vocabulary = getVocabulary()['data'];
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
+    
+    // Process arrays from form data
+    $examples = isset($data['examples']) ? explode("\n", trim($data['examples'])) : [];
+    $examples = array_map('trim', $examples);
+    $examples = array_filter($examples, function($item) { return !empty($item); });
+    
+    $synonyms = isset($data['synonyms']) ? array_map('trim', explode(',', $data['synonyms'])) : [];
+    $synonyms = array_filter($synonyms, function($item) { return !empty($item); });
+    
+    $antonyms = isset($data['antonyms']) ? array_map('trim', explode(',', $data['antonyms'])) : [];
+    $antonyms = array_filter($antonyms, function($item) { return !empty($item); });
+    
+    $collocations = isset($data['collocations']) ? array_map('trim', explode(',', $data['collocations'])) : [];
+    $collocations = array_filter($collocations, function($item) { return !empty($item); });
     
     // Prepare data with required fields
     $entry = [
         'english' => $data['english'],
         'vietnamese' => $data['vietnamese'],
         'context' => $data['context'] ?? '',
-        'examples' => isset($data['examples']) ? explode("\n", trim($data['examples'])) : [],
-        'synonyms' => isset($data['synonyms']) ? array_map('trim', explode(',', $data['synonyms'])) : [],
-        'antonyms' => isset($data['antonyms']) ? array_map('trim', explode(',', $data['antonyms'])) : [],
+        'examples' => $examples,
+        'synonyms' => $synonyms,
+        'antonyms' => $antonyms,
+        'collocations' => $collocations,
+        'ielts_usage' => $data['ielts_usage'] ?? '',
+        'ielts_band' => $data['ielts_band'] ?? '6', 
         'category' => isset($data['category']) ? $data['category'] : [],
         'difficulty' => $data['difficulty'] ?? 'medium',
         'pronunciation' => $data['pronunciation'] ?? ['en' => '', 'vi' => ''],
@@ -271,7 +317,7 @@ function saveVocabularyEntry($data, $id = null) {
  * @return bool Success status
  */
 function deleteVocabularyEntry($id) {
-    $vocabulary = getVocabulary()['data'];
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
     $found = false;
     
     foreach ($vocabulary as $key => $item) {
@@ -377,15 +423,25 @@ function getDailyWord() {
     }
     
     // No daily word for today, so create one
-    $vocabulary = getVocabulary()['data'];
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
     
     if (empty($vocabulary)) {
         return null; // No vocabulary entries available
     }
     
+    // Prefer higher IELTS band words for daily word
+    $filteredVocab = array_filter($vocabulary, function($item) {
+        return isset($item['ielts_band']) && $item['ielts_band'] >= 6;
+    });
+    
+    // If no high-band words, use all vocabulary
+    if (empty($filteredVocab)) {
+        $filteredVocab = $vocabulary;
+    }
+    
     // Randomly select a word
-    $randomIndex = array_rand($vocabulary);
-    $selectedWord = $vocabulary[$randomIndex];
+    $randomIndex = array_rand($filteredVocab);
+    $selectedWord = $filteredVocab[$randomIndex];
     
     // Save as today's daily word
     $dailyWords[] = [
@@ -452,7 +508,8 @@ function registerUser($username, $password, $email) {
         ],
         'settings' => [
             'notifications' => true,
-            'daily_goal' => 10
+            'daily_goal' => 10,
+            'target_ielts_band' => 7.0
         ]
     ];
     
@@ -573,11 +630,11 @@ function updateUserSettings($userId, $settings) {
  * 
  * @param int $wordId Vocabulary ID
  * @param string $result Review result (correct/incorrect)
- * @param string $mode Review mode (flashcard/quiz/matching)
+ * @param string $mode Review mode (flashcard/quiz/matching/collocations/writing)
  * @return bool Success status
  */
 function recordReviewActivity($wordId, $result, $mode) {
-    $vocabulary = getVocabulary()['data'];
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
     $found = false;
     $today = date('Y-m-d');
     
@@ -684,23 +741,38 @@ function updateUserStats($result, $mode) {
             'words_learned' => 0,
             'quiz_accuracy' => 0,
             'study_time' => 0,
-            'daily_activity' => []
+            'daily_activity' => [],
+            'ielts_progress' => [
+                'band_5' => 0,
+                'band_6' => 0,
+                'band_7' => 0,
+                'band_8' => 0
+            ]
         ];
     }
     
-    // Update accuracy stats
+    // Update accuracy stats by mode
+    if (!isset($stats[$userKey]['accuracy'])) {
+        $stats[$userKey]['accuracy'] = [];
+    }
+    
+    if (!isset($stats[$userKey]['accuracy'][$mode])) {
+        $stats[$userKey]['accuracy'][$mode] = [
+            'correct' => 0,
+            'incorrect' => 0
+        ];
+    }
+    
+    if ($result === 'correct') {
+        $stats[$userKey]['accuracy'][$mode]['correct']++;
+    } else {
+        $stats[$userKey]['accuracy'][$mode]['incorrect']++;
+    }
+    
+    // Update overall accuracy for quiz mode
     if ($mode === 'quiz') {
-        $totalReviews = $stats[$userKey]['total_reviews'] ?? 0;
-        $correctReviews = $stats[$userKey]['correct_reviews'] ?? 0;
-        
-        $totalReviews++;
-        if ($result === 'correct') {
-            $correctReviews++;
-        }
-        
-        $stats[$userKey]['total_reviews'] = $totalReviews;
-        $stats[$userKey]['correct_reviews'] = $correctReviews;
-        $stats[$userKey]['quiz_accuracy'] = ($correctReviews / $totalReviews) * 100;
+        $totalQuizReviews = $stats[$userKey]['accuracy']['quiz']['correct'] + $stats[$userKey]['accuracy']['quiz']['incorrect'];
+        $stats[$userKey]['quiz_accuracy'] = ($stats[$userKey]['accuracy']['quiz']['correct'] / $totalQuizReviews) * 100;
     }
     
     // Update daily activity
@@ -720,6 +792,32 @@ function updateUserStats($result, $mode) {
         ];
     }
     
+    // If result is correct and SRS level is high, count as "learned"
+    if ($result === 'correct') {
+        $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
+        foreach ($vocabulary as $item) {
+            if (isset($item['id']) && $item['id'] == $_POST['word_id'] && isset($item['srs_level']) && $item['srs_level'] >= 4) {
+                $stats[$userKey]['words_learned']++;
+                
+                // Update IELTS band progress
+                if (isset($item['ielts_band'])) {
+                    $band = (int)$item['ielts_band'];
+                    if ($band >= 8) {
+                        $stats[$userKey]['ielts_progress']['band_8']++;
+                    } elseif ($band >= 7) {
+                        $stats[$userKey]['ielts_progress']['band_7']++;
+                    } elseif ($band >= 6) {
+                        $stats[$userKey]['ielts_progress']['band_6']++;
+                    } else {
+                        $stats[$userKey]['ielts_progress']['band_5']++;
+                    }
+                }
+                
+                break;
+            }
+        }
+    }
+    
     $jsonData = json_encode($stats, JSON_PRETTY_PRINT);
     return file_put_contents(STATS_FILE, $jsonData) !== false;
 }
@@ -731,7 +829,7 @@ function updateUserStats($result, $mode) {
  * @return array Due words for review
  */
 function getDueWordsForReview($limit = 10) {
-    $vocabulary = getVocabulary()['data'];
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
     $today = date('Y-m-d');
     $dueWords = [];
     
@@ -814,7 +912,7 @@ function importVocabularyFromCSV($csvFile) {
     $columnMap = array_flip($header);
     
     // Get existing vocabulary
-    $vocabulary = getVocabulary()['data'];
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
     $imported = 0;
     
     while (($row = fgetcsv($handle)) !== false) {
@@ -828,6 +926,9 @@ function importVocabularyFromCSV($csvFile) {
             'context' => isset($columnMap['context']) ? $row[$columnMap['context']] : '',
             'synonyms' => isset($columnMap['synonyms']) ? $row[$columnMap['synonyms']] : '',
             'antonyms' => isset($columnMap['antonyms']) ? $row[$columnMap['antonyms']] : '',
+            'ielts_band' => isset($columnMap['ielts_band']) ? $row[$columnMap['ielts_band']] : '6',
+            'collocations' => isset($columnMap['collocations']) ? $row[$columnMap['collocations']] : '',
+            'ielts_usage' => isset($columnMap['ielts_usage']) ? $row[$columnMap['ielts_usage']] : '',
             'difficulty' => isset($columnMap['difficulty']) ? $row[$columnMap['difficulty']] : 'medium'
         ];
         
@@ -871,7 +972,7 @@ function exportVocabularyToCSV($filePath, $filters = []) {
     }
     
     // Write header
-    $header = ['english', 'vietnamese', 'context', 'examples', 'synonyms', 'antonyms', 'category', 'difficulty'];
+    $header = ['english', 'vietnamese', 'context', 'examples', 'synonyms', 'antonyms', 'collocations', 'ielts_band', 'ielts_usage', 'category', 'difficulty'];
     fputcsv($handle, $header);
     
     // Write data
@@ -883,6 +984,9 @@ function exportVocabularyToCSV($filePath, $filters = []) {
             is_array($item['examples'] ?? null) ? implode("\n", $item['examples']) : '',
             is_array($item['synonyms'] ?? null) ? implode(', ', $item['synonyms']) : '',
             is_array($item['antonyms'] ?? null) ? implode(', ', $item['antonyms']) : '',
+            is_array($item['collocations'] ?? null) ? implode(', ', $item['collocations']) : '',
+            $item['ielts_band'] ?? '6',
+            $item['ielts_usage'] ?? '',
             is_array($item['category'] ?? null) ? implode(', ', $item['category']) : '',
             $item['difficulty'] ?? 'medium'
         ];
@@ -921,6 +1025,113 @@ function getUserStatistics($userId = null) {
     $userKey = "user_{$userId}";
     
     return isset($stats[$userKey]) ? $stats[$userKey] : [];
+}
+
+/**
+ * Get IELTS readiness statistics for a user
+ * 
+ * @param int $userId User ID
+ * @return array IELTS readiness data
+ */
+function getIELTSReadiness($userId) {
+    $vocabulary = json_decode(file_get_contents(VOCAB_FILE), true) ?? [];
+    $user = getUserById($userId);
+    $targetBand = $user['settings']['target_ielts_band'] ?? 7.0;
+    
+    // Filter vocabulary for this user
+    $userVocab = array_filter($vocabulary, function($item) use ($userId) {
+        return !isset($item['user_id']) || $item['user_id'] == $userId;
+    });
+    
+    // Count total words
+    $totalWords = count($userVocab);
+    if ($totalWords === 0) {
+        return [
+            'overall' => 0,
+            'by_band' => [5 => 0, 6 => 0, 7 => 0, 8 => 0],
+            'mastered' => 0,
+            'learning' => 0,
+            'due' => 0
+        ];
+    }
+    
+    // Count words by IELTS band
+    $bandCounts = [5 => 0, 6 => 0, 7 => 0, 8 => 0];
+    $masteredCount = 0;
+    $learningCount = 0;
+    $dueCount = 0;
+    $today = date('Y-m-d');
+    
+    foreach ($userVocab as $word) {
+        // Count by IELTS band
+        $band = isset($word['ielts_band']) ? (int)$word['ielts_band'] : 6;
+        if ($band >= 8) {
+            $bandCounts[8]++;
+        } elseif ($band >= 7) {
+            $bandCounts[7]++;
+        } elseif ($band >= 6) {
+            $bandCounts[6]++;
+        } else {
+            $bandCounts[5]++;
+        }
+        
+        // Count by mastery level
+        if (isset($word['srs_level']) && $word['srs_level'] >= 4) {
+            $masteredCount++;
+        } else {
+            $learningCount++;
+        }
+        
+        // Count due words
+        if (isset($word['next_review']) && $word['next_review'] <= $today) {
+            $dueCount++;
+        }
+    }
+    
+    // Calculate overall readiness based on target band
+    $weightedSum = 0;
+    
+    if ($targetBand <= 5.5) {
+        $weightedSum = $bandCounts[5] * 1.0;
+    } elseif ($targetBand <= 6.5) {
+        $weightedSum = $bandCounts[5] * 0.3 + $bandCounts[6] * 1.0;
+    } elseif ($targetBand <= 7.5) {
+        $weightedSum = $bandCounts[5] * 0.1 + $bandCounts[6] * 0.4 + $bandCounts[7] * 1.0;
+    } else {
+        $weightedSum = $bandCounts[5] * 0.1 + $bandCounts[6] * 0.2 + $bandCounts[7] * 0.5 + $bandCounts[8] * 1.0;
+    }
+    
+    // Target number of words for each band level
+    $targetWords = [
+        5 => 1000, 
+        6 => 1500, 
+        7 => 2000, 
+        8 => 1000
+    ];
+    
+    // Calculate overall readiness percentage
+    $overall = 0;
+    if ($targetBand <= 5.5) {
+        $overall = min(100, ($bandCounts[5] / $targetWords[5]) * 100);
+    } elseif ($targetBand <= 6.5) {
+        $overall = min(100, (($bandCounts[5] + $bandCounts[6]) / ($targetWords[5] + $targetWords[6])) * 100);
+    } elseif ($targetBand <= 7.5) {
+        $overall = min(100, (($bandCounts[5] + $bandCounts[6] + $bandCounts[7]) / ($targetWords[5] + $targetWords[6] + $targetWords[7])) * 100);
+    } else {
+        $overall = min(100, (($bandCounts[5] + $bandCounts[6] + $bandCounts[7] + $bandCounts[8]) / ($targetWords[5] + $targetWords[6] + $targetWords[7] + $targetWords[8])) * 100);
+    }
+    
+    // Take mastery into account
+    $masteryFactor = $masteredCount / $totalWords;
+    $overall = $overall * (0.3 + 0.7 * $masteryFactor);
+    
+    return [
+        'overall' => round($overall),
+        'by_band' => $bandCounts,
+        'mastered' => $masteredCount,
+        'learning' => $learningCount,
+        'due' => $dueCount
+    ];
 }
 
 /**

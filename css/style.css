@@ -1,39 +1,70 @@
-/* Main Styles */
+/* IELTS Vocabulary App - Enhanced Styles 
+-------------------------------------------------- */
+
+/* Base Styles */
 body {
     background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #343a40;
+    line-height: 1.6;
 }
 
-.navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.navbar-brand {
-    font-weight: bold;
-}
-
-.card {
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    border: none;
-}
-
-.card-header {
-    border-radius: 8px 8px 0 0 !important;
+h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
-/* Vietnamese Text Styles for Proper Diacritics */
-.vietnamese-text {
-    font-family: 'Arial Unicode MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Navigation and Header */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 0.7rem 1rem;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    padding: 0.7rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Card Styling */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+    border: none;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;
 }
 
 /* Flashcard Styles */
 .flashcard {
     width: 400px;
     height: 300px;
-    perspective: 1000px;
+    perspective: 1200px;
     cursor: pointer;
     margin: 0 auto;
 }
@@ -45,8 +76,8 @@ body {
     text-align: center;
     transition: transform 0.8s;
     transform-style: preserve-3d;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-radius: 1rem;
 }
 
 .flashcard.flipped .flashcard-inner {
@@ -62,68 +93,80 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 1rem;
+    padding: 25px;
 }
 
 .flashcard-front {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: linear-gradient(135deg, #4a6bfd, #3251f7);
     color: white;
+}
+
+.flashcard-front h2, .flashcard-back h3 {
+    margin-bottom: 1rem;
 }
 
 .flashcard-back {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    color: #212529;
+    color: #343a40;
     transform: rotateY(180deg);
 }
 
 .context-text {
     font-style: italic;
-    margin-top: 15px;
+    margin-top: 1rem;
     font-size: 0.95rem;
-    border-left: 3px solid #007bff;
-    padding-left: 10px;
+    border-left: 3px solid #4a6bfd;
+    padding-left: 0.75rem;
     text-align: left;
 }
 
 .synonyms-antonyms {
-    margin-top: 15px;
+    margin-top: 1rem;
     font-size: 0.9rem;
     text-align: left;
     width: 100%;
+}
+
+/* IELTS Band Indicator */
+#flashcard-band-level, #quiz-band-level, #collocation-band-level, #writing-band-level {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 /* Quiz Styles */
 .quiz-options {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin: 20px 0;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
 }
 
 .quiz-option {
-    padding: 15px;
+    padding: 1rem 1.25rem;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     background-color: #fff;
+    font-weight: 500;
 }
 
 .quiz-option:hover {
-    background-color: #e9ecef;
+    background-color: #f8f9fa;
     transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 
 .quiz-option.selected {
-    background-color: #cfe2ff;
-    border-color: #0d6efd;
+    background-color: #e7f1ff;
+    border-color: #4a6bfd;
 }
 
 .quiz-option.correct {
-    background-color: #d1e7dd;
-    border-color: #198754;
+    background-color: #d4edda;
+    border-color: #28a745;
 }
 
 .quiz-option.incorrect {
@@ -133,30 +176,31 @@ body {
 
 /* Matching Styles */
 .matching-item {
-    padding: 12px 15px;
-    margin-bottom: 12px;
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 0.75rem;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     background-color: #fff;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    font-weight: 500;
 }
 
 .matching-item:hover {
-    transform: translateX(3px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 
 .matching-item.selected {
-    background-color: #cfe2ff;
-    border-color: #0d6efd;
+    background-color: #e7f1ff;
+    border-color: #4a6bfd;
     transform: translateX(5px);
 }
 
 .matching-item.matched {
-    background-color: #d1e7dd;
-    border-color: #198754;
+    background-color: #d4edda;
+    border-color: #28a745;
 }
 
 .matching-item.incorrect {
@@ -166,45 +210,79 @@ body {
 
 .matching-item.connected {
     border-width: 2px;
-    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+    box-shadow: 0 0 0 2px rgba(74, 107, 253, 0.25);
 }
 
-.matching-line {
-    position: absolute;
-    background-color: #6c757d;
-    height: 2px;
-    z-index: 0;
-    transform-origin: 0 0;
-    pointer-events: none;
+/* Collocations Mode Styles */
+#collocation-options .btn {
+    text-align: left;
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.arrow-container {
-    font-size: 24px;
-    color: #6c757d;
+#collocation-options .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* Writing Practice Styles */
+#writing-response {
+    min-height: 200px;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+#writing-keywords .card {
+    transition: transform 0.3s ease;
+}
+
+#writing-keywords .card:hover {
+    transform: translateY(-5px);
 }
 
 /* Controls */
 .controls {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
     justify-content: center;
+}
+
+.controls .btn {
+    padding: 0.65rem 1.5rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.controls .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 /* Progress Bar */
 .progress {
-    height: 10px;
-    border-radius: 5px;
-    margin-top: 15px;
+    height: 0.625rem;
+    border-radius: 1rem;
+    background-color: #e9ecef;
+    margin-top: 1rem;
+    overflow: hidden;
 }
 
 .progress-bar {
     transition: width 0.5s ease;
+    border-radius: 1rem;
 }
 
 /* Playground modes */
 .playground-mode {
     min-height: 500px;
+    padding: 1rem 0;
 }
 
 /* Daily Word */
@@ -228,8 +306,12 @@ body {
 
 /* Login/Register Form */
 .auth-form {
-    max-width: 400px;
+    max-width: 450px;
     margin: 0 auto;
+}
+
+.auth-form .card {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
 /* Notifications */
@@ -238,36 +320,177 @@ body {
 }
 
 @keyframes slideDown {
-    from { transform: translateY(-100%); }
-    to { transform: translateY(0); }
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* Badge Styles */
 .badge {
     font-weight: 500;
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 0.5rem 0.85rem;
+    border-radius: 30px;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .flashcard {
-        width: 300px;
-        height: 220px;
+        width: 320px;
+        height: 250px;
     }
     
     .controls {
         flex-wrap: wrap;
     }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    h2 {
+        font-size: 1.7rem;
+    }
+    
+    h3 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .flashcard {
+        width: 280px;
+        height: 220px;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
 }
 
 /* Vietnamese Diacritics Support */
-@font-face {
-    font-family: 'Vietnamese Font';
-    src: local('Arial Unicode MS'), local('Segoe UI');
-    unicode-range: U+0102-0103, U+00C2, U+00CA, U+00D4, U+00D5, U+00DD, U+00E2, U+00EA, U+00F4, U+00F5, U+00FD, U+0110, U+0111;
+.vietnamese {
+    font-family: 'Poppins', 'Arial Unicode MS', 'Segoe UI', sans-serif;
 }
 
-.vietnamese {
-    font-family: 'Vietnamese Font', 'Arial Unicode MS', 'Segoe UI', sans-serif;
+/* Tooltip */
+.tooltip {
+    font-size: 0.9rem;
+}
+
+/* Table Styles */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(74, 107, 253, 0.05);
+}
+
+/* Input Fields */
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border-color: #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4a6bfd;
+    box-shadow: 0 0 0 0.2rem rgba(74, 107, 253, 0.25);
+}
+
+/* Custom Checkboxes and Radio Buttons */
+.form-check-input:checked {
+    background-color: #4a6bfd;
+    border-color: #4a6bfd;
+}
+
+/* IELTS Readiness Section */
+.card.bg-primary .progress-bar.bg-white {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Fixed Resources Button */
+.btn.position-fixed {
+    width: 3.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1030;
+    transition: all 0.3s ease;
+}
+
+.btn.position-fixed:hover {
+    transform: scale(1.1);
+}
+
+.btn.position-fixed i {
+    font-size: 1.25rem;
+}
+
+/* Offcanvas Styling */
+.offcanvas {
+    border-radius: 1rem 0 0 1rem;
+}
+
+.offcanvas-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Custom Animation for Button Clicks */
+.btn-primary:active {
+    transform: scale(0.95);
+}
+
+/* Improve Visual Hierarchy with Better Typography */
+.card-title {
+    margin-bottom: 1rem;
+    color: #212529;
+}
+
+p {
+    color: #495057;
+}
+
+small, .small {
+    color: #6c757d;
+}
+
+/* Badge for IELTS Bands */
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.badge.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+/* Word View Page */
+.badge.p-2.fs-5 {
+    font-size: 1rem !important;
+    padding: 0.5rem 1rem !important;
+}
+
+/* Animation for Progress */
+@keyframes progress-fill {
+    from { width: 0%; }
+    to { width: var(--target-width); }
+}
+
+.progress-bar.with-animation {
+    animation: progress-fill 1s ease-out forwards;
 }

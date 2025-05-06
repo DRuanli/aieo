@@ -1,1 +1,13 @@
-[]
+{
+    "user_1": {
+        "words_learned": 0,
+        "quiz_accuracy": 0,
+        "study_time": 0,
+        "daily_activity": [
+            {
+                "date": "2025-05-06",
+                "words_studied": 1
+            }
+        ]
+    }
+}

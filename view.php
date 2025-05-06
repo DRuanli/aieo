@@ -40,6 +40,19 @@ include 'includes/header.php';
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- IELTS Band Level Badge -->
+                    <?php if (!empty($word['ielts_band'])): ?>
+                    <div class="mb-3 text-center">
+                        <span class="badge <?php 
+                            echo $word['ielts_band'] >= 8 ? 'bg-danger' : 
+                                ($word['ielts_band'] >= 7 ? 'bg-warning text-dark' : 
+                                 ($word['ielts_band'] >= 6 ? 'bg-info text-dark' : 'bg-success')); 
+                        ?> p-2 fs-5">
+                            IELTS Band <?php echo htmlspecialchars($word['ielts_band']); ?>
+                        </span>
+                    </div>
+                    <?php endif; ?>
+                    
                     <div class="row">
                         <div class="col-md-6">
                             <div class="card mb-4">
@@ -56,12 +69,23 @@ include 'includes/header.php';
                                         </div>
                                     <?php endif; ?>
                                     
+                                    <?php if (!empty($word['collocations'])): ?>
+                                        <div class="mt-3">
+                                            <h5>Common Collocations</h5>
+                                            <p>
+                                                <?php foreach ($word['collocations'] as $collocation): ?>
+                                                    <span class="badge bg-light text-dark border mb-1 me-1"><?php echo htmlspecialchars($collocation); ?></span>
+                                                <?php endforeach; ?>
+                                            </p>
+                                        </div>
+                                    <?php endif; ?>
+                                    
                                     <?php if (!empty($word['synonyms'])): ?>
                                         <div class="mt-3">
                                             <h5>Synonyms</h5>
                                             <p>
                                                 <?php foreach ($word['synonyms'] as $synonym): ?>
-                                                    <span class="badge bg-secondary me-1"><?php echo htmlspecialchars($synonym); ?></span>
+                                                    <span class="badge bg-secondary me-1 mb-1"><?php echo htmlspecialchars($synonym); ?></span>
                                                 <?php endforeach; ?>
                                             </p>
                                         </div>
@@ -72,7 +96,7 @@ include 'includes/header.php';
                                             <h5>Antonyms</h5>
                                             <p>
                                                 <?php foreach ($word['antonyms'] as $antonym): ?>
-                                                    <span class="badge bg-danger me-1"><?php echo htmlspecialchars($antonym); ?></span>
+                                                    <span class="badge bg-danger me-1 mb-1"><?php echo htmlspecialchars($antonym); ?></span>
                                                 <?php endforeach; ?>
                                             </p>
                                         </div>
@@ -87,7 +111,7 @@ include 'includes/header.php';
                                     <h4>Vietnamese</h4>
                                 </div>
                                 <div class="card-body">
-                                    <h2><?php echo htmlspecialchars($word['vietnamese']); ?></h2>
+                                    <h2 class="vietnamese"><?php echo htmlspecialchars($word['vietnamese']); ?></h2>
                                     
                                     <?php if (!empty($word['pronunciation']) && !empty($word['pronunciation']['vi'])): ?>
                                         <div class="mt-3">
@@ -98,10 +122,10 @@ include 'includes/header.php';
                                     
                                     <?php if (!empty($word['category'])): ?>
                                         <div class="mt-3">
-                                            <h5>Categories</h5>
+                                            <h5>IELTS Topics</h5>
                                             <p>
                                                 <?php foreach ($word['category'] as $category): ?>
-                                                    <span class="badge bg-info text-dark me-1"><?php echo htmlspecialchars($category); ?></span>
+                                                    <span class="badge bg-info text-dark me-1 mb-1"><?php echo htmlspecialchars($category); ?></span>
                                                 <?php endforeach; ?>
                                             </p>
                                         </div>
@@ -125,19 +149,19 @@ include 'includes/header.php';
                         <div class="col-md-12">
                             <div class="card mb-4">
                                 <div class="card-header bg-light">
-                                    <h4>Context & Examples</h4>
+                                    <h4>IELTS Usage</h4>
                                 </div>
                                 <div class="card-body">
                                     <?php if (!empty($word['context'])): ?>
-                                        <div class="mb-3">
+                                        <div class="mb-4">
                                             <h5>Primary Context</h5>
-                                            <p class="p-2 bg-light rounded"><?php echo htmlspecialchars($word['context']); ?></p>
+                                            <p class="p-3 bg-light rounded border-start border-primary border-3"><?php echo htmlspecialchars($word['context']); ?></p>
                                         </div>
                                     <?php endif; ?>
                                     
                                     <?php if (!empty($word['examples'])): ?>
-                                        <div>
-                                            <h5>Additional Examples</h5>
+                                        <div class="mb-4">
+                                            <h5>IELTS Example Sentences</h5>
                                             <ul class="list-group">
                                                 <?php foreach ($word['examples'] as $example): ?>
                                                     <li class="list-group-item"><?php echo htmlspecialchars($example); ?></li>
@@ -145,11 +169,75 @@ include 'includes/header.php';
                                             </ul>
                                         </div>
                                     <?php endif; ?>
+                                    
+                                    <?php if (!empty($word['ielts_usage'])): ?>
+                                        <div class="mb-4">
+                                            <h5>IELTS Usage Tips</h5>
+                                            <div class="alert alert-info">
+                                                <?php echo nl2br(htmlspecialchars($word['ielts_usage'])); ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="mb-4">
+                                        <h5>Practice Suggestions</h5>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="card h-100">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Writing Practice</h6>
+                                                        <p class="card-text">Use this word in an IELTS Task 2 essay about 
+                                                            <?php 
+                                                            if (!empty($word['category']) && count($word['category']) > 0) {
+                                                                echo htmlspecialchars($word['category'][0]);
+                                                            } else {
+                                                                echo 'a relevant topic';
+                                                            }
+                                                            ?>.
+                                                        </p>
+                                                        <a href="playground.php?mode=writing&english=<?php echo urlencode($word['english']); ?>" class="btn btn-primary btn-sm">
+                                                            <i class="fas fa-pen"></i> Practice
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card h-100">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Collocation Exercise</h6>
+                                                        <p class="card-text">Practice using this word with its common collocations in context.</p>
+                                                        <a href="playground.php?mode=collocations&english=<?php echo urlencode($word['english']); ?>" class="btn btn-primary btn-sm">
+                                                            <i class="fas fa-link"></i> Practice
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card h-100">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Speaking Practice</h6>
+                                                        <p class="card-text">Use this word in speaking responses about <?php 
+                                                            if (!empty($word['category']) && count($word['category']) > 0) {
+                                                                echo htmlspecialchars($word['category'][0]);
+                                                            } else {
+                                                                echo 'a relevant topic';
+                                                            }
+                                                            ?>.
+                                                        </p>
+                                                        <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#speakingModal">
+                                                            <i class="fas fa-microphone"></i> Practice
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- Study History Section -->
                     <?php if (isset($_SESSION['user_id']) && isset($word['review_history']) && !empty($word['review_history'])): ?>
                         <div class="row">
                             <div class="col-md-12">
@@ -212,6 +300,12 @@ include 'includes/header.php';
                                                 </div>
                                             </div>
                                         </div>
+                                        
+                                        <div class="mt-3 text-center">
+                                            <a href="playground.php?mode=flashcards&english=<?php echo urlencode($word['english']); ?>" class="btn btn-primary">
+                                                <i class="fas fa-play"></i> Review This Word
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -222,5 +316,151 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
+
+<!-- Speaking Practice Modal -->
+<div class="modal fade" id="speakingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Speaking Practice: <?php echo htmlspecialchars($word['english']); ?></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>IELTS Speaking Question</h6>
+                    <div class="alert alert-primary">
+                        <?php 
+                        $topics = $word['category'] ?? ['general'];
+                        $topic = $topics[array_rand($topics)];
+                        
+                        $questions = [
+                            'Education' => [
+                                "Describe a teacher who has influenced you. Use the word \"" . htmlspecialchars($word['english']) . "\" in your response.",
+                                "What changes would you like to see in the education system? Use the word \"" . htmlspecialchars($word['english']) . "\" in your answer."
+                            ],
+                            'Environment' => [
+                                "How has the environment in your city changed in recent years? Use the word \"" . htmlspecialchars($word['english']) . "\" in your response.",
+                                "What can individuals do to protect the environment? Include the word \"" . htmlspecialchars($word['english']) . "\" in your answer."
+                            ],
+                            'Technology' => [
+                                "How has technology changed the way we communicate? Use the word \"" . htmlspecialchars($word['english']) . "\" in your response.",
+                                "Describe a piece of technology that has improved your life. Include the word \"" . htmlspecialchars($word['english']) . "\" in your answer."
+                            ],
+                            'Health' => [
+                                "What do you do to stay healthy? Use the word \"" . htmlspecialchars($word['english']) . "\" in your response.",
+                                "How important is mental health compared to physical health? Include the word \"" . htmlspecialchars($word['english']) . "\" in your answer."
+                            ],
+                            'Work' => [
+                                "What skills are important in your field of work or study? Use the word \"" . htmlspecialchars($word['english']) . "\" in your response.",
+                                "Describe your ideal work environment. Include the word \"" . htmlspecialchars($word['english']) . "\" in your answer."
+                            ],
+                            'general' => [
+                                "What changes would you like to see in your community? Use the word \"" . htmlspecialchars($word['english']) . "\" in your response.",
+                                "Describe a challenge you've overcome in your life. Include the word \"" . htmlspecialchars($word['english']) . "\" in your answer."
+                            ]
+                        ];
+                        
+                        // Get questions for the chosen topic or use general questions
+                        $topicQuestions = isset($questions[$topic]) ? $questions[$topic] : $questions['general'];
+                        
+                        // Randomly select one question
+                        echo $topicQuestions[array_rand($topicQuestions)];
+                        ?>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Record Your Response</h6>
+                    <div class="text-center">
+                        <button id="startRecording" class="btn btn-danger">
+                            <i class="fas fa-microphone"></i> Start Recording
+                        </button>
+                        <button id="stopRecording" class="btn btn-secondary" disabled>
+                            <i class="fas fa-stop"></i> Stop Recording
+                        </button>
+                        
+                        <div class="mt-3" id="recordingStatus"></div>
+                        
+                        <div class="mt-3" id="audioPlayback" style="display: none;">
+                            <audio id="recordedAudio" controls></audio>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Tips for Using "<?php echo htmlspecialchars($word['english']); ?>" in Speaking</h6>
+                    <ul>
+                        <?php if (!empty($word['collocations'])): ?>
+                            <li>Try using common collocations like: <?php echo htmlspecialchars(implode(', ', array_slice($word['collocations'], 0, 3))); ?></li>
+                        <?php endif; ?>
+                        <li>Make sure to pronounce the word clearly and confidently.</li>
+                        <li>Use the word in a relevant context that showcases your understanding of its meaning.</li>
+                        <li>If appropriate, use this word alongside related vocabulary from the same topic.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Audio recording functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const startButton = document.getElementById('startRecording');
+        const stopButton = document.getElementById('stopRecording');
+        const recordingStatus = document.getElementById('recordingStatus');
+        const audioPlayback = document.getElementById('audioPlayback');
+        const recordedAudio = document.getElementById('recordedAudio');
+        
+        let mediaRecorder;
+        let audioChunks = [];
+        
+        startButton.addEventListener('click', async function() {
+            audioChunks = [];
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.addEventListener('dataavailable', event => {
+                    audioChunks.push(event.data);
+                });
+                
+                mediaRecorder.addEventListener('stop', () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    recordedAudio.src = audioUrl;
+                    audioPlayback.style.display = 'block';
+                    recordingStatus.innerHTML = '<span class="text-success">Recording complete!</span>';
+                    
+                    // Stop all tracks on the stream to release the microphone
+                    stream.getTracks().forEach(track => track.stop());
+                });
+                
+                mediaRecorder.start();
+                
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                recordingStatus.innerHTML = '<span class="text-danger">Recording... (speak now)</span>';
+                
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                recordingStatus.innerHTML = '<span class="text-danger">Error accessing microphone. Please check your browser permissions.</span>';
+            }
+        });
+        
+        stopButton.addEventListener('click', function() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        });
+    });
+</script>
 
 <?php include 'includes/footer.php'; ?>
