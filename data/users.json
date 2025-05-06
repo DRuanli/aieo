@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "username": "Elio",
+        "password": "$2y$12$b2dUzXYlIgkvXjNsKeWIaus0N6KNkvb26HtSSapLMZEipeOFJLCgG",
+        "email": "nguyen2332004@gmail.com",
+        "created_at": "2025-05-06",
+        "streak": {
+            "current": 0,
+            "max": 0,
+            "last_login": "2025-05-06"
+        },
+        "settings": {
+            "notifications": true,
+            "daily_goal": 10
+        }
+    }
+]
